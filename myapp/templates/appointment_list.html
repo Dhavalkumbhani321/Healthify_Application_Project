@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %} Appointment List Page {% endblock %}
+
+{% load static %} 
+
+{% block css %}
+	<link rel="stylesheet" href="{% static 'administrators/plugins/datatables/datatables.min.css' %}">
+{% endblock %}
+
+{% block sidenav %}
+	<li> 
+		<a href="{% url 'admin_dashboard' %}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+	</li>
+	<li class="active"> 
+		<a href="{% url 'appointment_list' %}"><i class="fe fe-layout"></i> <span>Appointments</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'specialities' %}"><i class="fe fe-users"></i> <span>Specialities</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'doctor_list' %}"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'admin_reviews' %}"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'transactions_list' %}"><i class="fe fe-activity"></i> <span>Transactions</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'settings' %}"><i class="fe fe-vector"></i> <span>Settings</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			
+		</ul>
+	</li>
+	<li class="menu-title"> 
+		<span>Pages</span>
+	</li>
+	<li> 
+		<a href="{% url 'profile' %}"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			<li><a href="{% url 'logout' %}"> Logout </a></li>
+			<li><a href="{% url 'lock_screen' %}"> Lock Screen </a></li>
+		</ul>
+	</li>
+{% endblock %}
+
+{% block breadcrumb %}Appointments{% endblock %}
+
+{% block breadcrumb1 %}Appointments{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-12">
+		
+			<!-- Recent Orders -->
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="datatable table table-hover table-center mb-0">
+							<thead>
+								<tr>
+									<th>Doctor Name</th>
+									<th>Speciality</th>
+									<th>Patient Name</th>
+									<th>Apointment Time</th>
+									<th>Status</th>
+									<th class="text-right">Amount</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for appointment in appointments %}
+								<tr>
+									<td>
+										<h2 class="table-avatar">
+											<a href="{% url 'doctor_profile' appointment.doctor.full_name|slugify appointment.doctor.id %}" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{appointment.doctor.image.url}}" alt="User Image"></a>
+											<a href="{% url 'doctor_profile' appointment.doctor.full_name|slugify appointment.doctor.id %}">{{appointment.doctor.full_name}}</a>
+										</h2>
+									</td>
+									<td>{{appointment.doctor.speciality.name}}</td>
+									<td>
+										<h2 class="table-avatar">
+											<a href="#" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{appointment.patient.image.url}}" alt="User Image"></a>
+											<a href="#">{{appointment.patient}}</a>
+										</h2>
+									</td>
+									<td>{{appointment.booking_date.date}} <span class="text-primary d-block">{{appointment.booking_date.time}}</span></td>
+									<td>
+										<div class="status-toggle">
+										{% if appointment.status == 'COMPLETED' or  appointment.status == 'ACCEPTTED' %}
+											<input type="checkbox" id="status_1" class="check" checked>
+										{% else %}
+											<input type="checkbox" id="status_1" class="check">
+										{% endif %}
+											<label for="status_1" class="checktoggle">checkbox</label>
+										</div>
+									</td>
+									<td class="text-right">
+										kSh {{appointment.amount}}
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- /Recent Orders -->
+							
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascript %} 
+	<!-- Datatables JS -->
+	<script src="{% static 'administrators/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+	<script src="{% static 'administrators/plugins/datatables/datatables.min.js' %}"></script>
+{% endblock %}

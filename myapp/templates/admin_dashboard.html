@@ -1,0 +1,560 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% load static %}
+
+{% block css %}
+	<link rel="stylesheet" href="{% static 'administrators/plugins/morris/morris.css' %}">
+{% endblock %}
+
+{% block sidenav %}
+	<li class="active"> 
+		<a href="{% url 'admin_dashboard' %}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'appointment_list' %}"><i class="fe fe-layout"></i> <span>Appointments</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'specialities' %}"><i class="fe fe-users"></i> <span>Specialities</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'doctor_list' %}"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'admin_reviews' %}"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'transactions_list' %}"><i class="fe fe-activity"></i> <span>Transactions</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'settings' %}"><i class="fe fe-vector"></i> <span>Settings</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			
+		</ul>
+	</li>
+	<li class="menu-title"> 
+		<span>Pages</span>
+	</li>
+	<li> 
+		<a href="{% url 'profile' %}"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			<li><a href="{% url 'logout' %}"> Log Out </a></li>
+			<li><a href="{% url 'lock_screen' %}"> Lock Screen </a></li>
+		</ul>
+	</li>
+	
+{% endblock %}
+
+{% block breadcrumb %}Welcome Admin!{% endblock %}
+
+{% block breadcrumb1 %} Dashboard {% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xl-3 col-sm-6 col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="dash-widget-header">
+						<span class="dash-widget-icon text-primary border-primary">
+							<i class="fe fe-users"></i>
+						</span>
+						<div class="dash-count">
+							<h3>{{doctors.count}}</h3>
+						</div>
+					</div>
+					<div class="dash-widget-info">
+						<h6 class="text-muted">Doctors</h6>
+						<div class="progress progress-sm">
+							<div class="progress-bar bg-primary w-50"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-sm-6 col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="dash-widget-header">
+						<span class="dash-widget-icon text-success">
+							<i class="fe fe-credit-card"></i>
+						</span>
+						<div class="dash-count">
+							<h3>{{patients.count}}</h3>
+						</div>
+					</div>
+					<div class="dash-widget-info">
+						
+						<h6 class="text-muted">Patients</h6>
+						<div class="progress progress-sm">
+							<div class="progress-bar bg-success w-50"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-sm-6 col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="dash-widget-header">
+						<span class="dash-widget-icon text-danger border-danger">
+							<i class="fe fe-money"></i>
+						</span>
+						<div class="dash-count">
+							<h3>{{appointments.count}}</h3>
+						</div>
+					</div>
+					<div class="dash-widget-info">
+						
+						<h6 class="text-muted">Appointment</h6>
+						<div class="progress progress-sm">
+							<div class="progress-bar bg-danger w-50"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-sm-6 col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="dash-widget-header">
+						<span class="dash-widget-icon text-warning border-warning">
+							<i class="fe fe-folder"></i>
+						</span>
+						<div class="dash-count">
+							<h3>kSh {{total_revenue}}</h3>
+						</div>
+					</div>
+					<div class="dash-widget-info">
+						
+						<h6 class="text-muted">Revenue</h6>
+						<div class="progress progress-sm">
+							<div class="progress-bar bg-warning w-50"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12 col-lg-6">
+		
+			<!-- Sales Chart -->
+			<div class="card card-chart">
+				<div class="card-header">
+					<h4 class="card-title">Revenue</h4>
+				</div>
+				<div class="card-body">
+					<div id="morrisArea"></div>
+				</div>
+			</div>
+			<!-- /Sales Chart -->
+			
+		</div>
+		<div class="col-md-12 col-lg-6">
+		
+			<!-- Invoice Chart -->
+			<div class="card card-chart">
+				<div class="card-header">
+					<h4 class="card-title">Status</h4>
+				</div>
+				<div class="card-body">
+					<div id="morrisLine"></div>
+				</div>
+			</div>
+			<!-- /Invoice Chart -->
+			
+		</div>	
+	</div>
+	<div class="row">
+		<div class="col-md-6 d-flex">
+		
+			<!-- Recent Orders -->
+			<div class="card card-table flex-fill">
+				<div class="card-header">
+					<h4 class="card-title">Doctors List</h4>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover table-center mb-0">
+							<thead>
+								<tr>
+									<th>Doctor Name</th>
+									<th>Speciality</th>
+									<th>Earned</th>
+									<th>Reviews</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for doctor in doctors %}
+								<tr>
+									<td>
+										<h2 class="table-avatar">
+											<a href="{% url 'doctor-profile' doctor.full_name|slugify doctor.id %}" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{doctor.image.url}}" alt="User Image"></a>
+											<a href="{% url 'doctor-profile' doctor.full_name|slugify doctor.id %}">{{doctor.full_name}}</a>
+										</h2>
+									</td>
+									<td>{{doctor.speciality.name}}</td>
+									<td>Ksh {{doctor.total_revenue}}</td>
+									<td>
+									{% for x, rate in doctor.review.items %}
+										{% if rate == 'filled' %}
+										<i class="fe fe-star text-warning"></i>
+										{% else %}
+										<i class="fe fe-star-o text-secondary"></i>
+										{% endif %}
+									{% endfor %}
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- /Recent Orders -->
+			
+		</div>
+		<div class="col-md-6 d-flex">
+		
+			<!-- Feed Activity -->
+			<div class="card  card-table flex-fill">
+				<div class="card-header">
+					<h4 class="card-title">Patients List</h4>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover table-center mb-0">
+							<thead>
+								<tr>													
+									<th>Patient Name</th>
+									<th>Phone</th>
+									<th>Last Visit</th>
+									<th>Paid</th>													
+								</tr>
+							</thead>
+							<tbody>
+							{% for patient in patients %}
+								<tr>
+									<td>
+										<h2 class="table-avatar">
+											<a href="#" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{patient.image.url}}" alt="User Image"></a>
+											<a href="#">{{patient}} </a>
+										</h2>
+									</td>
+									<td>{{patient.phone_no}}</td>
+								{% if patient.last_appointment != None %}
+									<td>{{patient.last_appointment.booking_date}}</td>
+									<td class="text-right">Ksh {{patient.last_appointment.amount}}</td>
+								{% else %}
+									<td>None</td>
+									<td class="text-right">None</td>
+								{% endif %}
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- /Feed Activity -->
+			
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		
+			<!-- Recent Orders -->
+			<div class="card card-table">
+				<div class="card-header">
+					<h4 class="card-title">Appointment List</h4>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover table-center mb-0">
+							<thead>
+								<tr>
+									<th>Doctor Name</th>
+									<th>Speciality</th>
+									<th>Patient Name</th>
+									<th>Apointment Time</th>
+									<th>Status</th>
+									<th class="text-right">Amount</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for appointment in appointments %}
+								<tr>
+									<td>
+										<h2 class="table-avatar">
+											<a href="{% url 'doctor-profile' appointment.doctor.full_name|slugify appointment.doctor.id %}" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{appointment.doctor.image.url}}" alt="User Image"></a>
+											<a href="{% url 'doctor-profile' appointment.doctor.full_name|slugify appointment.doctor.id %}">{{appointment.doctor.full_name}}</a>
+										</h2>
+									</td>
+									<td>Dental</td>
+									<td>
+										<h2 class="table-avatar">
+											<a href="#" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{appointment.patient.image.url}}" alt="User Image"></a>
+											<a href="#">{{appointment.patient}}</a>
+										</h2>
+									</td>
+									<td>{{appointment.booking_date.date}} <span class="text-primary d-block">{{appointment.booking_date.time}}</span></td>
+									<td>
+										<div class="status-toggle">
+										{% if appointment.status == 'COMPLETED' or  appointment.status == 'ACCEPTTED' %}
+											<input type="checkbox" id="status_1" class="check" checked>
+										{% else %}
+											<input type="checkbox" id="status_1" class="check">
+										{% endif %}
+											<label for="status_1" class="checktoggle">checkbox</label>
+										
+										
+										</div>
+									</td>
+									<td class="text-right">
+										kSh {{appointment.amount}}
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- /Recent Orders -->
+			
+		</div>
+	</div>
+{% endblock %}	
+
+{% block javascript %}		
+	<script src="{% static 'administrators/plugins/raphael/raphael.min.js' %}"></script>    
+	<script src="{% static 'administrators/plugins/morris/morris.min.js' %}"></script> 
+	<script type="text/javascript">
+		$(function(){
+	
+			/* Morris Area Chart */
+			
+			window.mA = Morris.Area({
+			    element: 'morrisArea',
+			    data: [
+			    {% for month, revenue in months_revenue.items %}
+			        { y: '{{month}}', a: {{revenue}}},
+			    {% endfor %}
+			    ],
+			    xkey: 'y',
+			    ykeys: ['a'],
+			    labels: ['Revenue'],
+			    lineColors: ['#1b5a90'],
+			    lineWidth: 2,
+				
+		     	fillOpacity: 0.5,
+			    gridTextSize: 10,
+			    hideHover: 'auto',
+			    resize: true,
+				redraw: true
+			});
+			
+			/* Morris Line Chart */
+			
+			window.mL = Morris.Line({
+			    element: 'morrisLine',
+			    data: [
+		{% for month, users in new_users.items %}
+			{% for user in users %}
+				{% if forloop.counter == 1 %}
+					{ y: '{{month}}', a: {{user}},
+				{% else %} 
+					b: {{user}}},
+		        {% endif %}
+	        {% endfor %}
+	    {% endfor %}
+			    ],
+			    xkey: 'y',
+			    ykeys: ['a', 'b'],
+			    labels: ['Doctors', 'Patients'],
+			    lineColors: ['#1b5a90','#ff9d00'],
+			    lineWidth: 1,
+			    gridTextSize: 10,
+			    hideHover: 'auto',
+			    resize: true,
+				redraw: true
+			});
+			$(window).on("resize", function(){
+				mA.redraw();
+				mL.redraw();
+			});
+
+		});
+	</script>
+
+
+{% endblock %}
+
+
+
+<!-- Footer -->
+<footer class="footer">
+				
+	<!-- Footer Top -->
+	<div class="footer-top">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+				
+					<!-- Footer Widget -->
+					<div class="footer-widget footer-about">
+						<div class="footer-logo">
+							<img src="{% static 'cas/img/footer-logo.png' %}" alt="logo">
+						</div>
+						<div class="footer-about-content">
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+							<div class="social-icon">
+								<ul>
+									<li>
+										<a href="#" target="_blank"><i class="fab fa-facebook-f"></i> </a>
+									</li>
+									<li>
+										<a href="#" target="_blank"><i class="fab fa-twitter"></i> </a>
+									</li>
+									<li>
+										<a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+									</li>
+									<li>
+										<a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+									</li>
+									<li>
+										<a href="#" target="_blank"><i class="fab fa-dribbble"></i> </a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- /Footer Widget -->
+					
+				</div>
+				
+				<div class="col-lg-3 col-md-6">
+				
+					<!-- Footer Widget -->
+					<div class="footer-widget footer-menu">
+						<h2 class="footer-title">For Patients</h2>
+						<ul>
+							<li><a href="search.html"><i class="fas fa-angle-double-right"></i> Search for Doctors</a></li>
+							<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
+							<li><a href="register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
+							<li><a href="booking.html"><i class="fas fa-angle-double-right"></i> Booking</a></li>
+							<li><a href="patient-dashboard.html"><i class="fas fa-angle-double-right"></i> Patient Dashboard</a></li>
+						</ul>
+					</div>
+					<!-- /Footer Widget -->
+					
+				</div>
+				
+				<div class="col-lg-3 col-md-6">
+				
+					<!-- Footer Widget -->
+					<div class="footer-widget footer-menu">
+						<h2 class="footer-title">For Doctors</h2>
+						<ul>
+							<li><a href="appointments.html"><i class="fas fa-angle-double-right"></i> Appointments</a></li>
+							<li><a href="chat.html"><i class="fas fa-angle-double-right"></i> Chat</a></li>
+							<li><a href="login.html"><i class="fas fa-angle-double-right"></i> Login</a></li>
+							<li><a href="doctor-register.html"><i class="fas fa-angle-double-right"></i> Register</a></li>
+							<li><a href="doctor-dashboard.html"><i class="fas fa-angle-double-right"></i> Doctor Dashboard</a></li>
+						</ul>
+					</div>
+					<!-- /Footer Widget -->
+					
+				</div>
+				
+				<div class="col-lg-3 col-md-6">
+				
+					<!-- Footer Widget -->
+					<div class="footer-widget footer-contact">
+						<h2 class="footer-title">Contact Us</h2>
+						<div class="footer-contact-info">
+							<div class="footer-address">
+								<span><i class="fas fa-map-marker-alt"></i></span>
+								<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
+							</div>
+							<p>
+								<i class="fas fa-phone-alt"></i>
+								+91 7878076262
+							</p>
+							<p class="mb-0">
+								<i class="fas fa-envelope"></i>
+								heathifyexample@gmail.com
+							</p>
+						</div>
+					</div>
+					<!-- /Footer Widget -->
+					
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	<!-- /Footer Top -->
+	
+	<!-- Footer Bottom -->
+	<div class="footer-bottom">
+		<div class="container-fluid">
+		
+			<!-- Copyright -->
+			<div class="copyright">
+				<div class="row">
+					<div class="col-md-6 col-lg-6">
+						<div class="copyright-text">
+							<p class="mb-0"><a href="templateshub.net">Templates Hub</a></p>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-6">
+					
+						<!-- Copyright Menu -->
+						<div class="copyright-menu">
+							<ul class="policy-menu">
+								
+							</ul>
+						</div>
+						<!-- /Copyright Menu -->
+						
+					</div>
+				</div>
+			</div>
+			<!-- /Copyright -->
+			
+		</div>
+	</div>
+	<!-- /Footer Bottom -->
+	
+</footer>
+<!-- /Footer -->
+
+</div>
+<!-- /Main Wrapper -->
+
+<!-- jQuery -->
+<script src="{% static 'cas/js/jquery.min.js' %}"></script>
+
+<!-- Bootstrap Core JS -->
+<script src="{% static 'cas/js/popper.min.js' %}"></script>
+<script src="{% static 'cas/js/bootstrap.min.js' %}"></script>
+
+<!-- Custom JS -->
+<script src="{% static 'cas/js/script.js' %}"></script>
+<script src="{% static 'cas/js/ajax.js' %}"></script>
+
+</body>
+
+<!-- healthify/doctor-register.html  30 Nov 2019 04:12:16 GMT -->
+</html>

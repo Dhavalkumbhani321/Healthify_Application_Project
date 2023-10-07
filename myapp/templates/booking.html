@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %} {{doctor.first_name}} booking{% endblock %}
+
+{% load static %}
+
+
+{% block sidenav %}
+	<li class="active"> 
+		<a href="{% url 'admin_dashboard' %}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'appointment_list' %}"><i class="fe fe-layout"></i> <span>Appointments</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'specialities' %}"><i class="fe fe-users"></i> <span>Specialities</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'doctor_list' %}"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'admin_reviews' %}"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'transactions_list' %}"><i class="fe fe-activity"></i> <span>Transactions</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'settings' %}"><i class="fe fe-vector"></i> <span>Settings</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+	
+		</ul>
+	</li>
+	<li class="menu-title"> 
+		<span>Pages</span>
+	</li>
+	<li> 
+		<a href="{% url 'profile' %}"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			<li><a href="{% url 'logout' %}"> Log Out </a></li>
+			<li><a href="{% url 'lock_screen' %}"> Lock Screen </a></li>
+		</ul>
+	</li>
+	
+{% endblock %}
+
+
+
+
+
+{% block content %}
+
+	<!-- Breadcrumb -->
+	<div class="breadcrumb-bar">
+		<div class="container-fluid">
+			<div class="row align-items-center">
+				<div class="col-md-12 col-12">
+					<nav aria-label="breadcrumb" class="page-breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+							<li class="breadcrumb-item active" aria-current="page">Booking</li>
+						</ol>
+					</nav>
+					<h2 class="breadcrumb-title">Booking</h2>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Breadcrumb -->
+			
+	<!-- Page Content -->
+	<div class="content">
+		<div class="container">
+		
+			<div class="row">
+				<div class="col-12">
+				
+					<div class="card">
+						<div class="card-body">
+							<div class="booking-doc-info">
+								<a href="doctor-profile.html" class="booking-doc-img">
+									<img src="{{doctor.image.url}}" alt="User Image">
+								</a>
+								<div class="booking-info">
+									<h4><a href="{% url 'doctor_profile' %}">{{doctor.full_name}}</a></h4>
+									<div class="rating">
+										<i class="fas fa-star filled"></i>
+										<i class="fas fa-star filled"></i>
+										<i class="fas fa-star filled"></i>
+										<i class="fas fa-star filled"></i>
+										<i class="fas fa-star"></i>
+										<span class="d-inline-block average-rating">35</span>
+									</div>
+									<p class="text-muted mb-0"><i class="fas fa-map-marker-alt"></i> {{doctor.county}}, {{doctor.country}}</p>
+		
+							</div>
+						</div>
+					</div>
+					
+					<!-- Schedule Widget -->
+					<div class="card booking-schedule schedule-widget">
+					
+						<!-- Schedule Header -->
+						<div class="schedule-header">
+							<div class="row">
+								<div class="col-md-12">
+								
+									<!-- Day Slot -->
+									<div class="day-slot">
+										<ul>
+											<li class="left-arrow">
+												<a href="#">
+													<i class="fa fa-chevron-left"></i>
+												</a>
+											</li>
+											{% for date in booking_dates.keys %}
+											<li>
+												<span>{{date|date:"D"}}</span>
+												<span class="slot-date">{{date|date:"d M"}} <small class="slot-year">{{date|date:"Y"}}</small></span>
+											</li>
+											{% endfor %}
+											<li class="right-arrow">
+												<a href="#">
+													<i class="fa fa-chevron-right"></i>
+												</a>
+											</li>
+										</ul>
+									</div>
+									<!-- /Day Slot -->
+									
+								</div>
+							</div>
+						</div>
+						<!-- /Schedule Header -->
+						
+						<!-- Schedule Content -->
+						<div class="schedule-cont">
+							<div class="row">
+								<div class="col-md-12">
+								
+									<!-- Time Slot -->
+									<div class="time-slot">
+										<ul class="clearfix">
+										{% for date, times in booking_dates.items %}
+											<li>
+											{% if times != None %}
+												{% for time in times %}
+												<a class="timing" href="#" id="{{time|time:"H:i:s"}}_{{date|date:"d/m/Y"}}">
+													<span>{{time|time:"h:i"}}</span> <span>{{time|time:"A"}}</span>
+												</a>
+												{% endfor %}
+											{% else %}
+												<a class="timing" href="#" id="none">
+													<span>Unavailable</span>
+												</a>
+											<!-- <a class="timing selected" href="#">
+													<span>10:00</span> <span>AM</span>
+												</a> -->
+											{% endif %}
+											</li>
+										{% endfor %}
+										</ul>
+									</div>
+									<!-- /Time Slot -->
+									
+								</div>
+							</div>
+						</div>
+							<!-- /Schedule Content -->
+						
+					</div>
+					<!-- /Schedule Widget -->
+					
+					<!-- Submit Section -->
+			
+						{% csrf_token %}
+						<input type="text" name="time_date" style="display: none;">
+						<input type="text" name="doctor" style="display: none;" value="{{doctor.id}}">
+
+						<div class="submit-section proceed-btn text-right">
+							<button class="btn btn-primary submit-btn" type="submit">Proceed to Pay</button>
+						</div>
+					</form>
+					<!-- /Submit Section -->
+					
+				</div>
+			</div>
+		</div>
+
+	</div>		
+	<!-- /Page Content -->
+   
+{% endblock %}

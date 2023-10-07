@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Patients - Favourites{% endblock %}
+
+{% load static %}
+
+{% block breadcrumb %}Favourites{% endblock %}
+{% block breadcrumb1 %}Favourites{% endblock %}
+
+
+{% block sidenav %}
+	<li class="active"> 
+		<a href="{% url 'admin_dashboard' %}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'appointment_list' %}"><i class="fe fe-layout"></i> <span>Appointments</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'specialities' %}"><i class="fe fe-users"></i> <span>Specialities</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'doctor_list' %}"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'admin_reviews' %}"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'transactions_list' %}"><i class="fe fe-activity"></i> <span>Transactions</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'settings' %}"><i class="fe fe-vector"></i> <span>Settings</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+	
+		</ul>
+	</li>
+	<li class="menu-title"> 
+		<span>Pages</span>
+	</li>
+	<li> 
+		<a href="{% url 'profile' %}"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			<li><a href="{% url 'logout' %}"> Log Out </a></li>
+			<li><a href="{% url 'lock_screen' %}"> Lock Screen </a></li>
+		</ul>
+	</li>
+	
+{% endblock %}
+
+
+
+
+
+{% block content %}										
+	<div class="col-md-7 col-lg-8 col-xl-9">
+		<div class="row row-grid">
+		{% for favourite in favourites %}
+			<div class="col-md-6 col-lg-4 col-xl-3">
+				<div class="profile-widget">
+					<div class="doc-img">
+						<a href="{% url 'doctor_profile' favourite.doctor.full_name|slugify favourite.doctor.id %}">
+							<img class="img-fluid" alt="User Image" src="{{favourite.doctor.image.url}}">
+						</a>
+						<a href="{% url 'favourite_doctor' favourite.doctor.full_name|slugify favourite.doctor.id %}" class="fav-btn">
+							<i class="far fa-bookmark"></i>
+						</a>
+					</div>
+					<div class="pro-content">
+						<h3 class="title">
+							<a href="{% url 'doctor_profile' favourite.doctor.full_name|slugify favourite.doctor.id %}">{{favourite.doctor.first_name}} {{favourite.doctor.second_name}}</a> 
+							<i class="fas fa-check-circle verified"></i>
+						</h3>
+						<p class="speciality">{{favourite.doctor.latest_degree}}</p>
+						<div class="rating">
+						{% for x, filled in favourite.doctor.review.items %}	
+							<i class="fas fa-star {{filled}}"></i>
+						{% endfor %}
+							<span class="d-inline-block average-rating">({{favourite.doctor.total_reviews}})</span>
+						</div>
+						<ul class="available-info">
+							<li>
+								<i class="fas fa-map-marker-alt"></i> {{favourite.doctor.county}}, {{favourite.doctor.country}}
+							</li>
+							<li>
+								<i class="far fa-clock"></i> {{favourite.doctor.availability}}
+							</li>
+							<li>
+								<i class="far fa-money-bill-alt"></i> kSh {{favourite.doctor.pricing}} <i class="fas fa-info-circle" data-toggle="tooltip" title="Lorem Ipsum"></i>
+							</li>
+						</ul>
+						<div class="row row-sm">
+							<div class="col-6">
+								<a href="{% url 'doctor_profile' favourite.doctor.full_name|slugify favourite.doctor.id %}" class="btn view-btn">View Profile</a>
+							</div>
+							<div class="col-6">
+								<a href="{% url 'booking' favourite.doctor.full_name|slugify favourite.doctor.id %}" class="btn book-btn">Book Now</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+			
+			
+		</div>
+	</div>
+					
+{% endblock %}
+
+{% block javascript %}
+	<script src="{% static 'cas/js/ajax.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %} Patient List {% endblock %}
+
+{% load static %}
+
+{% block css %}	
+	<!-- Datatables CSS -->
+	<link rel="stylesheet" href="{% static 'administrators/plugins/datatables/datatables.min.css' %}">
+{% endblock %}
+
+{% block sidenav %}		
+	<li> 
+		<a href="{% url 'admin_dashboard' %}"><i class="fe fe-home"></i> <span>Dashboard</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'appointment_list' %}"><i class="fe fe-layout"></i> <span>Appointments</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'specialities' %}"><i class="fe fe-users"></i> <span>Specialities</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'doctor_list' %}"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
+	</li>
+	<li class="active"> 
+		<a href="{% url 'patient_list' %}"><i class="fe fe-user"></i> <span>Patients</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'admin_reviews' %}"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'transactions_list' %}"><i class="fe fe-activity"></i> <span>Transactions</span></a>
+	</li>
+	<li> 
+		<a href="{% url 'settings' %}"><i class="fe fe-vector"></i> <span>Settings</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			
+		</ul>
+	</li>
+	<li class="menu-title"> 
+		<span>Pages</span>
+	</li>
+	<li> 
+		<a href="{% url 'profile' %}"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
+	</li>
+	<li class="submenu">
+		<a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
+		<ul style="display: none;">
+			
+			<li><a href="{% url 'logout' %}"> Logout </a></li>
+			<li><a href="{% url 'lock_screen' %}"> Lock Screen </a></li>
+		</ul>
+	</li>
+{% endblock %}
+
+{% block breadcrumb %}List of Patient{% endblock %}
+
+{% block breadcrumb1 %}Patient {% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<div class="table-responsive">
+						<table class="datatable table table-hover table-center mb-0">
+							<thead>
+								<tr>
+									<th>Patient ID</th>
+									<th>Patient Name</th>
+									<th>Age</th>
+									<th>Address</th>
+									<th>Phone</th>
+									<th>Last Visit</th>
+									<th class="text-right">Paid</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for patient in patients %}
+								<tr>
+									<td>#PT00{{patient.id}}</td>
+									<td>
+										<h2 class="table-avatar">
+											<a href="#" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="{{patient.image.url}}" alt="User Image"></a>
+											<a href="#">{{patient}} </a>
+										</h2>
+									</td>
+									<td>{{ patient.d_o_b|timesince }}</td>
+									<td>{{patient.street_lane}}, {{patient.town}}, {{patient.county}}, {{patient.country}}</td>
+									<td>{{patient.phone_no}}</td>
+								{% if patient.last_appointment != None %}
+									<td>{{patient.last_appointment.booking_date}}</td>
+									<td class="text-right">Ksh {{patient.last_appointment.amount}}</td>
+								{% else %}
+									<td>None</td>
+									<td class="text-right">None</td>
+								{% endif %}
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>			
+	</div>
+{% endblock %}
+
+{% block javascript %} 
+	<!-- Datatables JS -->
+	<script src="{% static 'administrators/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+	<script src="{% static 'administrators/plugins/datatables/datatables.min.js' %}"></script>
+{% endblock %}
